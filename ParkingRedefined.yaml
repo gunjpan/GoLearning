@@ -1,0 +1,204 @@
+swagger: '2.0'
+info:
+  description: This is a Parking Lot Management server
+  version: 1.0.0
+  title: ParkingRedefined
+  termsOfService: http://swagger.io/terms/
+  contact:
+    email: apiteam@swagger.io
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+host: localhost
+tags:
+- name: lot
+  description: Everything about your parking lot
+- name: spot
+  description: Access to parking spot
+- name: car
+  description: Operations about car
+schemes:
+- http
+parameters:
+  name:
+    name: name
+    in: path
+    required: true
+    type: string
+    description: Name of the parking lot
+paths:
+  /lots:
+    post:
+      tags:
+      - lot
+      summary: Create a new parking lot
+      operationId: createLot
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - name: lot
+        in: body
+        description: Lot object that needs to be created
+        required: true
+        schema:
+          $ref: '#/definitions/Lot'
+      responses:
+        405:
+          description: Invalid input
+        204:
+          description: Lot created successfully
+  /lots/{name}:
+    get:
+      tags:
+      - lot
+      operationId: findLot
+      summary: Get parking lot info
+      parameters:
+      - $ref: '#/parameters/name'
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/Lot'
+        404:
+          description: Lot not found
+    put:
+      tags:
+      - lot
+      summary: Update an existing parking lot
+      operationId: updateLot
+      parameters:
+      - name: lot
+        in: body
+        description: Lot object with updated values
+        required: true
+        schema:
+          $ref: '#/definitions/Lot'
+      - $ref: '#/parameters/name'
+      responses:
+        204:
+          description: Lot update successful
+        404:
+          description: Lot not found
+        405:
+          description: Validation exception
+    delete:
+      tags:
+      - lot
+      operationId: deleteLot
+      summary: Delete a lot
+      parameters:
+      - $ref: '#/parameters/name'
+      responses:
+        204:
+          description: Lot Deleted
+        404:
+          description: Lot does not exist
+  /lots/{name}/enter:
+    post:
+      tags:
+      - lot
+      summary: Enter parking lot and park
+      operationId: parkCar
+      parameters:
+      - name: carPlate
+        in: query
+        type: string
+        description: car license plate
+      - name: carType
+        in: query
+        type: string
+        description: car size
+        enum:
+          - small
+          - medium
+      - $ref: '#/parameters/name'
+      responses:
+        200:
+          description: Parking ticket
+          schema:
+            $ref: '#/definitions/Ticket'
+        403:
+          description: Refused to park
+  /lots/{name}/exit:
+    post:
+      tags:
+      - lot
+      summary: Exit parking lot
+      operationId: unparkCar
+      parameters:
+      - name: carPlate
+        in: query
+        type: string
+        description: car license plate
+      - $ref: '#/parameters/name'
+      responses:
+        200:
+          description: Parking ticket
+          schema:
+            $ref: '#/definitions/Ticket'
+        403:
+          description: Refused to park
+definitions:
+  Lot:
+    type: object
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+        description: parking lot name
+      address:
+        type: object
+        description: parking lot address
+      smallCarSpots:
+        type: integer
+        description: total number of small car parking spots in the lot
+      mediumCarSpots:
+        type: integer
+        description: total number of medium car parking spots in the lot
+      ratesInfo:
+        type: string
+        description: Description of parking fees
+      full:
+        type: boolean
+        default: false
+        description: If parking lot is full
+  Spot:
+    type: object
+    properties:
+      number:
+        type: integer
+        description: Parking spot number
+      occupied:
+        type: boolean
+        default: false
+        description: Whether parking spot is used or not
+      size:
+        type: string
+        description: Type of car allowed to park
+        enum:
+        - small
+        - medium
+  Ticket:
+    type: object
+    properties:
+      number:
+        type: integer
+      inTime:
+        type: string
+        format: date-time
+      outTime:
+        type: string
+        format: date-time
+      spot:
+        $ref: '#/definitions/Spot'
+      lot:
+        $ref: '#/definitions/Lot'
+      charges:
+        type: number
+        format: double
+      currency:
+        type: string
