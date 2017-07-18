@@ -49,6 +49,22 @@ paths:
           description: Invalid input
         204:
           description: Lot created successfully
+    get:
+      tags:
+      - lot
+      summary: Get all parking lots
+      operationId: getLots
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        200:
+          description: Request successful
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Lot'
   /lots/{name}:
     get:
       tags:
