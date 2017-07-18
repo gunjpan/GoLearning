@@ -45,6 +45,13 @@ var routes = Routes{
   },
 
   Route{
+    "GetLots",
+    "GET",
+    "/lots",
+    GetLots,
+  },
+
+  Route{
     "CreateLot",
     "POST",
     "/lots",
