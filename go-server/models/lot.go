@@ -2,12 +2,11 @@ package models
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 )
 
 type Lot struct {
-	ID             string `json:"id"`
+	ID             string
 	Name           string
 	SmallCarSpots  int
 	MediumCarSpots int
@@ -26,10 +25,6 @@ type Address struct {
 var lots []Lot
 
 func GetLots(w http.ResponseWriter, r *http.Request) {
-	for _, v := range lots {
-		fmt.Println("%s", v)
-	}
-
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(lots)
